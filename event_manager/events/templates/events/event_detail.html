@@ -1,0 +1,113 @@
+{% extends 'events/base.html' %}
+
+{% block content %}
+<h1 class="mb-4">{{ event.title }}</h1>
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">{{ event.location }}</h5>
+        <p class="card-text">{{ event.get_type_display }}</p>
+        <p class="card-text">{{ event.description }}</p>
+        <p class="card-text">Участников: {{ event.participants_count }}/{{ event.max_participants }}</p>
+        <p class="card-text">Дата и время: {{ event.date|date:"d.m.Y H:i" }}</p>
+        <!-- Добавляем средний возраст участников -->
+        <p class="card-text">
+            Средний возраст участников:
+            {% if average_age %}
+                {{ average_age|floatformat:1 }} лет  <!-- Округляем до одного знака после запятой -->
+            {% else %}
+                Нет данных
+            {% endif %}
+        </p>
+    </div>
+</div>
+
+<h2 class="mt-4">Список участников:</h2>
+<ul class="list-group mb-4">
+    {% for participant in participants %}
+        <li class="list-group-item">
+            {{ participant.first_name }} {{ participant.last_name }}
+            <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#participantModal{{ participant.id }}">
+                <i class="fas fa-info-circle"></i>
+            </button>
+        </li>
+
+        <!-- Модальное окно с информацией о участнике -->
+        <div class="modal fade" id="participantModal{{ participant.id }}" tabindex="-1" aria-labelledby="participantModalLabel{{ participant.id }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="participantModalLabel{{ participant.id }}">{{ participant.first_name }} {{ participant.last_name }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>Email:</strong> {{ participant.email }}</p>
+                        <p><strong>Возраст:</strong> {{ participant.age }}</p>
+                        <p><strong>Университет:</strong> {{ participant.university }}</p>
+                        <p><strong>Факультет:</strong> {{ participant.faculty }}</p>
+                        <p><strong>Группа:</strong> {{ participant.group }}</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <li class="list-group-item">Пока нет участников.</li>
+    {% endfor %}
+</ul>
+
+<!-- Кнопка для открытия модального окна записи -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#registrationModal">
+    Записаться на мероприятие
+</button>
+
+<!-- Модальное окно для записи -->
+<div class="modal fade" id="registrationModal" tabindex="-1" aria-labelledby="registrationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="registrationModalLabel">Запись на мероприятие</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="registrationForm">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="id_first_name" class="form-label">Имя</label>
+                        <input type="text" name="first_name" class="form-control" id="id_first_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_last_name" class="form-label">Фамилия</label>
+                        <input type="text" name="last_name" class="form-control" id="id_last_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_email" class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control" id="id_email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_age" class="form-label">Возраст</label>
+                        <input type="number" name="age" class="form-control" id="id_age" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_university" class="form-label">Университет</label>
+                        <input type="text" name="university" class="form-control" id="id_university" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_faculty" class="form-label">Факультет</label>
+                        <input type="text" name="faculty" class="form-control" id="id_faculty" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_group" class="form-label">Группа</label>
+                        <input type="text" name="group" class="form-control" id="id_group" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                <button type="submit" form="registrationForm" class="btn btn-primary">Записаться</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

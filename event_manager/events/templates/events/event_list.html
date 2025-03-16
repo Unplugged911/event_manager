@@ -1,0 +1,23 @@
+{% extends 'events/base.html' %}
+
+{% block content %}
+<h1 class="mb-4">Список мероприятий</h1>
+<div class="list-group">
+    {% for event in events %}
+        <a href="{% url 'event_detail' event.id %}" class="list-group-item list-group-item-action">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">{{ event.title }}</h5>
+                <small>Участников: {{ event.participants_count }}/{{ event.max_participants }}</small>
+            </div>
+            <p class="mb-1">{{ event.description }}</p>
+            <small>Тип мероприятия: {{ event.get_type_display }}</small><br>
+            <small>Место: {{ event.location }}</small><br>
+            <small>Дата и время: {{ event.date|date:"d.m.Y H:i" }}</small>
+        </a>
+    {% empty %}
+        <div class="alert alert-info" role="alert">
+            Нет доступных мероприятий.
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

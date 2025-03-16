@@ -1,0 +1,51 @@
+{% extends 'events/base.html' %}
+
+{% block content %}
+<h1 class="mb-4">Статистика по мероприятиям</h1>
+
+<!-- Выбор мероприятия -->
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Выберите мероприятие</h5>
+        <form method="get" action="{% url 'event_statistics' %}">
+            <select name="event_id" class="form-select" onchange="this.form.submit()">
+                <option value="">Все мероприятия</option>
+                {% for event in events %}
+                    <option value="{{ event.id }}" {% if selected_event and selected_event.id == event.id %}selected{% endif %}>
+                        {{ event.title }}
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+</div>
+
+<!-- График 2: Распределение участников по университетам -->
+{% if selected_event %}
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Распределение участников по университетам ({{ selected_event.title }})</h5>
+            {% if image_universities %}
+                <img src="data:image/png;base64,{{ image_universities }}" alt="Статистика по университетам" class="img-fluid">
+            {% else %}
+                <p class="text-danger">Нет данных для отображения графика 2.</p>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}
+
+<!-- График 1: Количество участников по мероприятиям -->
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Количество участников по мероприятиям</h5>
+        {% if image_all_events %}
+            <img src="data:image/png;base64,{{ image_all_events }}" alt="Статистика" class="img-fluid">
+        {% else %}
+            <p class="text-danger">График 1 недоступен.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Кнопка для возврата на главную страницу -->
+<a href="{% url 'event_list' %}" class="btn btn-primary">Назад к списку мероприятий</a>
+{% endblock %}
