@@ -1,0 +1,17 @@
+Django==5.1.7
+asgiref
+contourpy
+cycler
+fonttools
+kiwisolver
+matplotlib
+mock
+numpy
+packaging
+pandas
+pillow
+python-deteutil
+pytz
+six
+sqlparse
+tzdata
